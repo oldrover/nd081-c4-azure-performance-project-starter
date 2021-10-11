@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 
 # App Insights
-from opencensus.ext.azure.log_exporter import AzureLogHandler
+from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
 from opencensus.ext.azure import metrics_exporter
 from opencensus.stats import aggregation as aggregation_module
 from opencensus.stats import measure as measure_module
@@ -20,24 +20,29 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-# Instrumentation Key
-guid = 'InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759'
+stats = stats_module.stats
+view_manager = stats.view_manager
 
 # Logging
 logger = logging.getLogger(__name__)
-logger.addHandler(AzureLogHandler(
-    connection_string=guid)
-)
+log_handler =AzureLogHandler(connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759')
+log_handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
+logger.addHandler(log_handler)
+
+event_handler = AzureEventHandler(connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759')
+logger.addHandler(event_handler)
+logger.setLevel(logging.INFO)
 
 # Metrics
 exporter = metrics_exporter.new_metrics_exporter(
     enable_standard_metrics=True,
-    connection_string=guid)
+    connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759')
+
 
 # Tracing
 tracer = Tracer(
     exporter=AzureExporter(
-        connection_string=guid),
+        connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759'),
     sampler=ProbabilitySampler(1.0),
 )
 
@@ -46,8 +51,8 @@ app = Flask(__name__)
 # Requests
 middleware = FlaskMiddleware(
     app,
-    exporter=AzureExporter(connection_string=guid),
-    sampler=ProbabilitySampler(1.0),
+    exporter=AzureExporter(connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759'),
+    sampler=ProbabilitySampler(1.0)
 )
 
 # Load configurations from environment or config file
