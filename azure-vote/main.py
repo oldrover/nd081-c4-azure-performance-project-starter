@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 
 # App Insights
-from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
+from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure import metrics_exporter
 from opencensus.stats import aggregation as aggregation_module
 from opencensus.stats import measure as measure_module
@@ -20,29 +20,23 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-stats = stats_module.stats
-view_manager = stats.view_manager
+conn_string='InstrumentationKey=0cff057f-bd4c-4e85-bbd6-29d694db8c82'
 
 # Logging
 logger = logging.getLogger(__name__)
-log_handler =AzureLogHandler(connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759')
-log_handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
-logger.addHandler(log_handler)
+logger.addHandler(AzureLogHandler(connection_string=conn_string))
 
-event_handler = AzureEventHandler(connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759')
-logger.addHandler(event_handler)
-logger.setLevel(logging.INFO)
 
 # Metrics
 exporter = metrics_exporter.new_metrics_exporter(
     enable_standard_metrics=True,
-    connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759')
+    connection_string=conn_string)
 
 
 # Tracing
 tracer = Tracer(
     exporter=AzureExporter(
-        connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759'),
+        connection_string=conn_string),
     sampler=ProbabilitySampler(1.0),
 )
 
@@ -51,7 +45,7 @@ app = Flask(__name__)
 # Requests
 middleware = FlaskMiddleware(
     app,
-    exporter=AzureExporter(connection_string='InstrumentationKey=9ed517ef-a846-4732-b808-a23b30e1f759'),
+    exporter=AzureExporter(connection_string=conn_string),
     sampler=ProbabilitySampler(1.0)
 )
 
