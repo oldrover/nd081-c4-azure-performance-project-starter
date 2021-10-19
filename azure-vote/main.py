@@ -20,7 +20,7 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-conn_string='InstrumentationKey=0cff057f-bd4c-4e85-bbd6-29d694db8c82'
+conn_string='InstrumentationKey=455ef43f-8c43-4aaa-af1a-ca98948c1d11'
 
 # Logging
 logger = logging.getLogger(__name__)
