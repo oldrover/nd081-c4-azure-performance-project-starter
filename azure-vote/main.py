@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 
 # App Insights
-from opencensus.ext.azure.log_exporter import AzureLogHandler
+from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
 from opencensus.ext.azure import metrics_exporter
 from opencensus.stats import aggregation as aggregation_module
 from opencensus.stats import measure as measure_module
@@ -25,6 +25,7 @@ conn_string='InstrumentationKey=81c72884-1cb7-4ff6-8068-c586b38fe2b1'
 # Logging
 logger = logging.getLogger(__name__)
 logger.addHandler(AzureLogHandler(connection_string=conn_string))
+logger.addHandler(AzureEventHandler(connection_string=conn_string))
 
 
 # Metrics
